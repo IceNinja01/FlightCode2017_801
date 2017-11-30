@@ -38,7 +38,10 @@ public class Chassis extends PIDSubsystem {
 	private double z;
 	private RollingAverage xAvg;
 	private RollingAverage yAvg;
-
+	private RollingAverage x_g;
+	private RollingAverage y_g;
+	private RollingAverage z_g;
+	private RollingAverage tilt;
 
 	public Chassis(){
 		
@@ -50,6 +53,10 @@ public class Chassis extends PIDSubsystem {
 		enable();
 		xAvg = new RollingAverage(20);
 		yAvg = new RollingAverage(20);
+		tilt = new RollingAverage(5);
+		x_g = new RollingAverage(5);
+		y_g = new RollingAverage(5);
+		z_g = new RollingAverage(5);
 //		xAvg.add(0.01);
 //		yAvg.add(-0.01);
 
@@ -62,31 +69,33 @@ public class Chassis extends PIDSubsystem {
     }
     
     public void motorDrive(double angleCmd_Deg) {
-    	
-        if(gottaGoFast){
-        	chassisSwerveDrive.setMaxDriveVoltage(0.9);
-            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
-        	y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.01, 1.0);
-        	xAvg.add(x);
-        	yAvg.add(y);
-        	//average x and y
-        	headingCMD = angleCmd_Deg;
-        	headingError = Robot.chassis.getGyroAngle() - headingCMD;
-        	chassisSwerveDrive.drive(xAvg.getAverage(), yAvg.getAverage(), 0.0, angleCmd_Deg);
-        	SmartDashboard.putString("Speed", "Fast");
+    	getTilt();
+    	if(tilt.getAverage()>30) {
+	        if(gottaGoFast){
+	        	chassisSwerveDrive.setMaxDriveVoltage(0.9);
+	            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
+	        	y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.01, 1.0);
+	        	xAvg.add(x);
+	        	yAvg.add(y);
+	        	//average x and y
+	        	headingCMD = angleCmd_Deg;
+	        	headingError = Robot.chassis.getGyroAngle() - headingCMD;
+	        	chassisSwerveDrive.drive(xAvg.getAverage(), yAvg.getAverage(), 0.0, angleCmd_Deg);
+	        	SmartDashboard.putString("Speed", "Fast");
+	    	}
+	        else{
+	        	chassisSwerveDrive.setMaxDriveVoltage(0.65);
+	            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
+	        	y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.01, 1.0);
+	        	xAvg.add(x);
+	        	yAvg.add(y);
+	        	z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0, 1.0);
+	        	chassisSwerveDrive.drive(xAvg.getAverage(), yAvg.getAverage(), z, angleCmd_Deg);
+	        	SmartDashboard.putString("Speed", "Slow");
+	        }
     	}
-        else{
-        	chassisSwerveDrive.setMaxDriveVoltage(0.65);
-            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
-        	y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.01, 1.0);
-//        	xAvg.add(x);
-//        	yAvg.add(y);
-        	z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0, 1.0);
-        	chassisSwerveDrive.drive(x, y, z, angleCmd_Deg);
-        	SmartDashboard.putString("Speed", "Slow");
-        }
-
-       
+    	else{chassisSwerveDrive.drive(0, 0, 0.0, angleCmd_Deg);}
+	
 
     }
     
@@ -130,7 +139,18 @@ public class Chassis extends PIDSubsystem {
 		return angle;
 	}
 
+	public void getTilt() {	
+		x_g.add(adis.getAccelX());
+		y_g.add(adis.getAccelY());
+		z_g.add(-adis.getAccelZ());
+		SmartDashboard.putNumber("x_g", x_g.getAverage());
+		SmartDashboard.putNumber("y_g", y_g.getAverage());
+		SmartDashboard.putNumber("z_g", z_g.getAverage());
+		tilt.add(Math.atan2( z_g.getAverage() , (Math.sqrt(y_g.getAverage()*y_g.getAverage() + x_g.getAverage()*x_g.getAverage())))*180/Math.PI);
+    	SmartDashboard.putNumber("tilt", tilt.getAverage());
 
+	}
+	
 	@Override
 	protected double returnPIDInput() {
 		return headingError;
