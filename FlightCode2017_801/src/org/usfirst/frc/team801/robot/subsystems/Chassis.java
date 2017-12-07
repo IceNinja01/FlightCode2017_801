@@ -68,7 +68,7 @@ public class Chassis extends PIDSubsystem {
     
     public void motorDrive(double angleCmd_Deg) {
     	getTilt();
-    	if(tilt.getAverage()>30) {
+//    	if(tilt.getAverage()>30) {
 	        if(gottaGoFast){
 	        	chassisSwerveDrive.setMaxDriveVoltage(0.9);
 	            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
@@ -87,8 +87,8 @@ public class Chassis extends PIDSubsystem {
 	        	chassisSwerveDrive.drive(x, y, z, angleCmd_Deg);
 	        	SmartDashboard.putString("Speed", "Slow");
 	        }
-    	}
-    	else{chassisSwerveDrive.drive(0, 0, 0.0, angleCmd_Deg);}
+//    	}
+//    	else{chassisSwerveDrive.drive(0, 0, 0.0, angleCmd_Deg);}
     }
     
     

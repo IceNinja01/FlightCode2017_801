@@ -54,6 +54,8 @@ public class SwerveDrive implements MotorSafety {
 	private PIDSource[] pidDriveSource  = new PIDSource[4];
     private double[] wheelAngles = new double[4];
 	private double[] wheelSpeeds = new double[4];
+	private double[] angleDiff = new double[4];
+
 	private RollingAverage xavg;
 	private RollingAverage yavg;
 	private RollingAverage zavg;
@@ -203,7 +205,8 @@ public class SwerveDrive implements MotorSafety {
 
 
 		    for(int i=0;i<4;i++){
-		    	
+		    
+		    	angleDiff[i]= Math.abs(wheelAngles[i]- oldAngle[i]);
 		    	rightSet[i] = oldAngle[i] + 90.0;
 		    	leftSet[i] = oldAngle[i] - 90.0;
 			    	if(rightSet[i] > 360){
@@ -217,7 +220,13 @@ public class SwerveDrive implements MotorSafety {
 //					driveMotors[i].setMotionMagicCruiseVelocity(wheelSpeeds[i]*maxDriveVoltage*10.0);
 //			    	driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*10.0);
 //			    	pidDriveController[i].setSetpoint(wheelSpeeds[i]*maxDriveVoltage*100.0);
-			    	driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*5400);
+			    	
+//			    	if(angleDiff[i] < 20.0) {
+			    		driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*5400);
+//			    	}
+//			    	else {
+//			    		driveMotors[i].set(0);
+//			    	}
 			    	wheelAngles[i] -= 180.0;
 			    	if(wheelAngles[i] < 0){
 			    		wheelAngles[i] += 360.0;
@@ -244,7 +253,8 @@ public class SwerveDrive implements MotorSafety {
 		    
 	    }
 
-	    
+	    	SmartDashboard.putNumber("Angle", angleDiff[0]);
+
 		if (m_safetyHelper != null) {
 			m_safetyHelper.feed();
       	}
