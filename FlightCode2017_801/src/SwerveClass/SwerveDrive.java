@@ -207,36 +207,23 @@ public class SwerveDrive implements MotorSafety {
 		    for(int i=0;i<4;i++){
 		    
 		    	angleDiff[i]= Math.abs(wheelAngles[i]- oldAngle[i]);
-		    	rightSet[i] = oldAngle[i] + 90.0;
-		    	leftSet[i] = oldAngle[i] - 90.0;
-			    	if(rightSet[i] > 360){
-			    		rightSet[i] -= 360.0;
-			    	}
-			    	if(leftSet[i] < 0){
-			    		leftSet[i] += 360.0;
-			    	}
-			    if(wheelAngles[i]>rightSet[i] && wheelAngles[i]<leftSet[i]){
-//					driveMotors[i].setMotionMagicAcceleration(wheelSpeeds[i]*maxDriveVoltage*10.0);
-//					driveMotors[i].setMotionMagicCruiseVelocity(wheelSpeeds[i]*maxDriveVoltage*10.0);
-//			    	driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*10.0);
-//			    	pidDriveController[i].setSetpoint(wheelSpeeds[i]*maxDriveVoltage*100.0);
+
+			    if(angleDiff[i] > 90){ //new angle is greater than a 90degree turn, so find shortest path
+			    	//reverse translational motors 
+			    	driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*5400);
 			    	
-//			    	if(angleDiff[i] < 20.0) {
-			    		driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*5400);
-//			    	}
-//			    	else {
-//			    		driveMotors[i].set(0);
-//			    	}
-			    	wheelAngles[i] -= 180.0;
-			    	if(wheelAngles[i] < 0){
+			    	//find new angle
+			    	wheelAngles[i] -= 180.0; //subtract 180 degrees
+			    	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
 			    		wheelAngles[i] += 360.0;
 			    	}
+			    	//now the angle is set to move to the shortest path, which is just 180 degrees 
+			    	//from the current heading
+			    	
 			    }    
+			    
 			    else{
-//			    	driveMotors[i].setMotionMagicAcceleration(-wheelSpeeds[i]*maxDriveVoltage*10.0);
-//					driveMotors[i].setMotionMagicCruiseVelocity(-wheelSpeeds[i]*maxDriveVoltage*10.0);
-//			    	driveMotors[i].set(wheelSpeeds[i]*maxDriveVoltage*10.0);
-//			    	pidDriveController[i].setSetpoint(-wheelSpeeds[i]*maxDriveVoltage*100.0);
+			    	pidDriveController[i].setSetpoint(-wheelSpeeds[i]*maxDriveVoltage*100.0);
 			    	driveMotors[i].set(-wheelSpeeds[i]*maxDriveVoltage*5400);
 
 			    }
