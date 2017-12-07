@@ -51,8 +51,6 @@ public class Chassis extends PIDSubsystem {
 		getPIDController().setInputRange(0.0, 360.0);
 		getPIDController().setOutputRange(-0.6, 0.6);
 		enable();
-		xAvg = new RollingAverage(20);
-		yAvg = new RollingAverage(20);
 		tilt = new RollingAverage(5);
 		x_g = new RollingAverage(5);
 		y_g = new RollingAverage(5);
@@ -75,28 +73,22 @@ public class Chassis extends PIDSubsystem {
 	        	chassisSwerveDrive.setMaxDriveVoltage(0.9);
 	            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
 	        	y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.01, 1.0);
-	        	xAvg.add(x);
-	        	yAvg.add(y);
 	        	//average x and y
 	        	headingCMD = angleCmd_Deg;
 	        	headingError = Robot.chassis.getGyroAngle() - headingCMD;
-	        	chassisSwerveDrive.drive(xAvg.getAverage(), yAvg.getAverage(), 0.0, angleCmd_Deg);
+	        	chassisSwerveDrive.drive(x, y, 0.0, angleCmd_Deg);
 	        	SmartDashboard.putString("Speed", "Fast");
 	    	}
 	        else{
 	        	chassisSwerveDrive.setMaxDriveVoltage(0.65);
 	            x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.01, 1.0);
 	        	y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.01, 1.0);
-	        	xAvg.add(x);
-	        	yAvg.add(y);
 	        	z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0, 1.0);
-	        	chassisSwerveDrive.drive(xAvg.getAverage(), yAvg.getAverage(), z, angleCmd_Deg);
+	        	chassisSwerveDrive.drive(x, y, z, angleCmd_Deg);
 	        	SmartDashboard.putString("Speed", "Slow");
 	        }
     	}
     	else{chassisSwerveDrive.drive(0, 0, 0.0, angleCmd_Deg);}
-	
-
     }
     
     

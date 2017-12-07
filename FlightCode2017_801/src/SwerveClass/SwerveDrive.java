@@ -1,6 +1,7 @@
 package SwerveClass;
 
 import org.usfirst.frc.team801.robot.Constants;
+import org.usfirst.frc.team801.robot.Utilities.RollingAverage;
 import org.usfirst.frc.team801.robot.Utilities.Utils;
 
 import com.ctre.CANTalon;
@@ -53,11 +54,14 @@ public class SwerveDrive implements MotorSafety {
 	private PIDSource[] pidDriveSource  = new PIDSource[4];
     private double[] wheelAngles = new double[4];
 	private double[] wheelSpeeds = new double[4];
-
+	private RollingAverage xavg;
+	private RollingAverage yavg;
+	private RollingAverage zavg;
 	
 	
 	public  SwerveDrive(final CANTalon FrontRightDriveMotor,final CANTalon FrontLeftDriveMotor,final CANTalon BackLeftDriveMotor,final CANTalon BackRightDriveMotor,
-			final CANTalon FrontRightTurnMotor,final CANTalon FrontLeftTurnMotor,final CANTalon rearLeftTurnMotor,final CANTalon rearRightTurnMotor) {
+			final CANTalon FrontRightTurnMotor,final CANTalon FrontLeftTurnMotor,final CANTalon rearLeftTurnMotor,final CANTalon rearRightTurnMotor,
+			int avgSize) {
 		
 		driveMotors[0] = FrontRightDriveMotor;
 		driveMotors[1]  = FrontLeftDriveMotor;
@@ -128,6 +132,10 @@ public class SwerveDrive implements MotorSafety {
 //		}
 		
 		
+		xavg = new RollingAverage(avgSize);
+		yavg = new RollingAverage(avgSize);
+		zavg = new RollingAverage(avgSize);
+		
 	}
 	 /**
 	   * Drive method for Swerve wheeled robots.
@@ -145,11 +153,13 @@ public class SwerveDrive implements MotorSafety {
 	   */
 	@SuppressWarnings("ParameterName")
 	public void drive(double AxisX, double AxisY, double rotation, double gyroAngle){
-		
+		xavg.add(AxisX);
+		yavg.add(AxisY);
+		zavg.add(rotation);
 		//Calculate Angles and Magnitudes for each motor
-		FWD = -AxisY;
-		STR = AxisX;
-		RCW = rotation;
+		FWD = -yavg.getAverage();
+		STR = xavg.getAverage();
+		RCW = zavg.getAverage();
 		double radians = gyroAngle *Math.PI/180.00;
 		temp = FWD*Math.cos(radians) + STR*Math.sin(radians);
 		STR = -FWD*Math.sin(radians) + STR*Math.cos(radians);
@@ -404,5 +414,4 @@ public class SwerveDrive implements MotorSafety {
 	public void setMaxDriveVoltage(double setVoltage){
 		this.maxDriveVoltage = setVoltage;
 	}
-	
 }
