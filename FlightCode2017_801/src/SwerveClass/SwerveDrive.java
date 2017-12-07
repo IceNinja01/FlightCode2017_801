@@ -131,7 +131,7 @@ public class SwerveDrive implements MotorSafety {
 //			pidTurnController[i].enable();
 //		}
 		
-		
+		// Initializes the _avg variables to size avgSize
 		xavg = new RollingAverage(avgSize);
 		yavg = new RollingAverage(avgSize);
 		zavg = new RollingAverage(avgSize);
