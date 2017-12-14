@@ -22,7 +22,7 @@ public class DriveWithJoysticks extends Command {
     @Override
 	protected void execute() {
     			
-    	Robot.chassis.motorDrive(0.0);
+    	Robot.chassis.motorDrive(Robot.chassis.getGyroAngle());
     }
 
     // Make this return true when this Command no longer needs to run execute()

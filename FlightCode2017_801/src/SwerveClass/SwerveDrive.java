@@ -223,7 +223,7 @@ public class SwerveDrive implements MotorSafety {
 			    }    
 			    
 			    else{
-			    	pidDriveController[i].setSetpoint(-wheelSpeeds[i]*maxDriveVoltage*100.0);
+//			    	pidDriveController[i].setSetpoint(-wheelSpeeds[i]*maxDriveVoltage*100.0);
 			    	driveMotors[i].set(-wheelSpeeds[i]*maxDriveVoltage*5400);
 
 			    }
