@@ -111,27 +111,7 @@ public class SwerveDrive implements MotorSafety {
 			pidTurnController[i].setOutputRange(-maxTurnVoltage, maxTurnVoltage);
 			pidTurnController[i].enable();
 		}
-//		for(int i=0;i<4;i++){
-//			int j =i;
-//			pidDriveSource[i] = new PIDSource() {				
-//				@Override
-//				public void setPIDSourceType(PIDSourceType pidSource) {				
-//				}
-//				@Override
-//				public double pidGet() {
-//					return currentSpeed(driveMotors[j],j);
-//				}				
-//				@Override
-//				public PIDSourceType getPIDSourceType() {
-//					return PIDSourceType.kDisplacement;
-//				}
-//			};
-//			pidDriveController[i] = new PIDController(1.0, kI, kD, pidDriveSource[i], driveMotors[i]);
-//			pidDriveController[i].setAbsoluteTolerance(10.0);
-//			pidDriveController[i].setInputRange(-100, 100);
-//			pidTurnController[i].setOutputRange(-maxDriveVoltage, maxDriveVoltage);
-//			pidTurnController[i].enable();
-//		}
+
 		
 		// Initializes the _avg variables to size avgSize
 		xavg = new RollingAverage(avgSize);

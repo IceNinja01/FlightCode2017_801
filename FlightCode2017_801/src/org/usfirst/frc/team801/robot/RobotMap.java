@@ -117,7 +117,7 @@ public class RobotMap{
 		backRightt = new CANTalon(Constants.BACKRIGHT_FRONTT);
 
 		swerveDrive = new SwerveDrive(rightFrontd, leftFrontd, backLeftd, backRightd,
-												rightFrontt,leftFrontt,backLeftt,backRightt,20);
+												rightFrontt,leftFrontt,backLeftt,backRightt,5);
 		
 		//Dumper
 		dumper = new CANTalon(Constants.DUMPER_MOTOR);
